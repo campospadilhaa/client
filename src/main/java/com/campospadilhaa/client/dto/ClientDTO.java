@@ -6,7 +6,7 @@ import com.campospadilhaa.client.entities.Client;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.PastOrPresent;
-import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public class ClientDTO {
 
@@ -17,12 +17,13 @@ public class ClientDTO {
 
 	private String cpf;
 
-	@Positive(message = "O preço deve ser positivo")
+	@PositiveOrZero(message = "O valor da renda deve ser positivo")
 	private Double income;
 
-	@PastOrPresent
+	@PastOrPresent(message = "A Data de nascimento não pode ser uma data futura")
 	private LocalDate birthDate;
 
+	@PositiveOrZero(message = "O número de filhos deve ser maior ou igual a zero")
 	private Integer children;
 
 	public ClientDTO() {

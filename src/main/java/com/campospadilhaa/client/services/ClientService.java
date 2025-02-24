@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.campospadilhaa.client.dto.ClientDTO;
 import com.campospadilhaa.client.entities.Client;
 import com.campospadilhaa.client.repository.ClientRepository;
+import com.campospadilhaa.client.services.exceptions.DatabaseException;
 import com.campospadilhaa.client.services.exceptions.ResourceNotFoundException;
 
 @Service
@@ -48,8 +50,30 @@ public class ClientService {
 		Client client = optionalClient.orElseThrow(
 				() -> new ResourceNotFoundException("Cliente inexistente"));
 
-		ClientDTO productDTO = new ClientDTO(client);
+		ClientDTO clientDTO = new ClientDTO(client);
 
-		return productDTO;
+		return clientDTO;
+	}
+
+	@Transactional
+	public ClientDTO insert(ClientDTO clientDTO) {
+
+		try {
+
+			Client client = new Client();
+
+			client.setName(clientDTO.getName());
+			client.setCpf(clientDTO.getCpf());
+			client.setIncome(clientDTO.getIncome());
+			client.setBirthDate(clientDTO.getBirthDate());
+			client.setChildren(clientDTO.getChildren());
+
+			client = clientRepository.save(client);
+
+			return new ClientDTO(client);
+
+		} catch (DataIntegrityViolationException e) {
+			throw new DatabaseException("Já existe um cliente com o CPF informado");
+		}
 	}
 }
