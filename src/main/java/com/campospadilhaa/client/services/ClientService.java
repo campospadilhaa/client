@@ -3,6 +3,8 @@ package com.campospadilhaa.client.services;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -23,5 +25,14 @@ public class ClientService {
 		List<Client> listaClient = clientRepository.findAll();
 
 		return listaClient.stream().map(item -> new ClientDTO(item)).toList();
+	}
+
+	@Transactional(readOnly = true) // configuração para lock de somente leitura, a transanção fica mais rápida
+	public Page<ClientDTO> findAll(Pageable pageable) {
+
+		// objeto Page que retorna paginação
+		Page<Client> listaClient = clientRepository.findAll(pageable);
+
+		return listaClient.map(item -> new ClientDTO(item));
 	}
 }
