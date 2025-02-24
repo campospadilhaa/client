@@ -3,6 +3,7 @@ package com.campospadilhaa.client.entities;
 import java.time.LocalDate;
 import java.util.Objects;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
@@ -18,7 +19,10 @@ public class Client {
 	private Long id;
 
 	private String name;
+
+	@Column(unique = true) // definição do campo email como único
 	private String cpf;
+
 	private Double income;
 	private LocalDate birthDate;
 	private Integer children;
