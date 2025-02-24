@@ -16,6 +16,8 @@ import com.campospadilhaa.client.repository.ClientRepository;
 import com.campospadilhaa.client.services.exceptions.DatabaseException;
 import com.campospadilhaa.client.services.exceptions.ResourceNotFoundException;
 
+import jakarta.persistence.EntityNotFoundException;
+
 @Service
 public class ClientService {
 
@@ -62,11 +64,7 @@ public class ClientService {
 
 			Client client = new Client();
 
-			client.setName(clientDTO.getName());
-			client.setCpf(clientDTO.getCpf());
-			client.setIncome(clientDTO.getIncome());
-			client.setBirthDate(clientDTO.getBirthDate());
-			client.setChildren(clientDTO.getChildren());
+			copyDtoToEntity(clientDTO, client);
 
 			client = clientRepository.save(client);
 
@@ -74,6 +72,33 @@ public class ClientService {
 
 		} catch (DataIntegrityViolationException e) {
 			throw new DatabaseException("Já existe um cliente com o CPF informado");
+		}
+	}
+
+	private void copyDtoToEntity(ClientDTO clientDTO, Client client) {
+
+		client.setName(clientDTO.getName());
+		client.setCpf(clientDTO.getCpf());
+		client.setIncome(clientDTO.getIncome());
+		client.setBirthDate(clientDTO.getBirthDate());
+		client.setChildren(clientDTO.getChildren());
+	}
+
+	@Transactional
+	public ClientDTO update(Long id, ClientDTO clientDTO) {
+
+		try {
+			
+			Client client = clientRepository.getReferenceById(id); // método 'getReferenceById' não vai ao banco de dados
+
+			copyDtoToEntity(clientDTO, client);
+
+			client = clientRepository.save(client);
+
+			return new ClientDTO(client);
+
+		} catch (EntityNotFoundException e) {
+			throw new ResourceNotFoundException("Cliente não encontrado para atualização");
 		}
 	}
 }
