@@ -1,6 +1,7 @@
 package com.campospadilhaa.client.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -34,5 +35,17 @@ public class ClientService {
 		Page<Client> listaClient = clientRepository.findAll(pageable);
 
 		return listaClient.map(item -> new ClientDTO(item));
+	}
+
+	@Transactional(readOnly = true) // configuração para lock de somente leitura, a transanção fica mais rápida
+	public ClientDTO findById(Long id) {
+
+		Optional<Client> optionalClient = clientRepository.findById(id);
+
+		Client client = optionalClient.get();
+
+		ClientDTO productDTO = new ClientDTO(client);
+
+		return productDTO;
 	}
 }
