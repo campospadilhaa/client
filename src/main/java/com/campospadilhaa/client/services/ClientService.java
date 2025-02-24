@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.campospadilhaa.client.dto.ClientDTO;
 import com.campospadilhaa.client.entities.Client;
 import com.campospadilhaa.client.repository.ClientRepository;
+import com.campospadilhaa.client.services.exceptions.ResourceNotFoundException;
 
 @Service
 public class ClientService {
@@ -42,7 +43,10 @@ public class ClientService {
 
 		Optional<Client> optionalClient = clientRepository.findById(id);
 
-		Client client = optionalClient.get();
+		// get( substituído pelo orElseThrow() para controlar exceção. Interceptando a exceção do Optional e lançando a minha exceção 'Client não encontrado'
+		//Client client = optionalClient.get();
+		Client client = optionalClient.orElseThrow(
+				() -> new ResourceNotFoundException("Cliente inexistente"));
 
 		ClientDTO productDTO = new ClientDTO(client);
 
