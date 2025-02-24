@@ -8,6 +8,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.campospadilhaa.client.dto.ClientDTO;
@@ -100,5 +101,19 @@ public class ClientService {
 		} catch (EntityNotFoundException e) {
 			throw new ResourceNotFoundException("Cliente não encontrado para atualização");
 		}
+	}
+
+	@Transactional(propagation = Propagation.SUPPORTS)
+	public void delete(Long id) {
+
+		if (!clientRepository.existsById(id)) {
+			throw new ResourceNotFoundException("Cliente não encontrado para exclusão");
+		}
+
+		try {
+			clientRepository.deleteById(id);
+		}catch (Exception e) {
+	        throw new DatabaseException("Falha na exclusão do cliente");
+	   	}
 	}
 }
